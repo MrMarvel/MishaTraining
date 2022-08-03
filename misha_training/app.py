@@ -43,6 +43,7 @@ class Logger:
 
 class App:
     def __init__(self):
+        self.questions_are_resolved = False
         self.all_b = None
         self.a: int = 0
         self.b: int = 0
@@ -76,6 +77,14 @@ class App:
         self.result_log = Text(self.root, state=DISABLED)
 
         self.send_result_button = Button(self.entry_frame, text="ОК", width=4)
+
+    def make_constraints(self):  # Constraints
+        self.time_left_label.pack(side=TOP)
+        self.entry_frame.pack(fill=X, expand=False, pady=1)
+        self.send_result_button.pack(side=RIGHT)
+        self.e.pack(side=RIGHT, padx=5)
+        self.question_text.pack(side=LEFT, fill=NONE, padx=5)
+        self.result_log.pack(fill=BOTH)
 
     def run(self):
 
@@ -157,7 +166,6 @@ class App:
             log_out_procedure()
             self.root.destroy()
 
-
         # Handling
         self.e.bind("<Return>", send_result)
         self.send_result_button.configure(command=lambda: send_result())
@@ -169,15 +177,7 @@ class App:
         # Run app
         self.root.mainloop()
 
-        return questions_are_resolved
-
-    def make_constraints(self):  # Constraints
-        self.time_left_label.pack(side=TOP)
-        self.entry_frame.pack(fill=X, expand=False, pady=1)
-        self.send_result_button.pack(side=RIGHT)
-        self.e.pack(side=RIGHT, padx=5)
-        self.question_text.pack(side=LEFT, fill=NONE, padx=5)
-        self.result_log.pack(fill=BOTH)
+        return self.questions_are_resolved
 
 
 if __name__ == '__main__':
