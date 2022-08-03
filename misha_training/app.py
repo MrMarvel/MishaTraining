@@ -1,10 +1,18 @@
 import os
+from os import path
 from datetime import datetime, timedelta
-from tkinter import *
-import numpy as np
 from sys import platform
+from tkinter import *
+from pathlib import Path
 
+import numpy as np
 from playsound import playsound
+
+print(os.path.dirname(__file__))
+PATH = os.path.abspath(os.path.dirname(__file__))
+print(PATH)
+R = Path(PATH).parent.joinpath("resources")
+print(R)
 
 
 def math_problem_generator(a: int):
@@ -15,9 +23,8 @@ def math_problem_generator(a: int):
 
 
 def log_out_procedure():
-    playsound("../resources/mario_death.mp3", block=False)
+    playsound(os.path.join(R, "mario_death.mp3"), block=False)
     if platform == "darwin":
-        import osascript
         os.system("/System/Library/CoreServices/Menu\\ Extras/user.menu/Contents/Resources/CGSession -suspend")
         # os.system("tell application \"System Events\" to log out")
     elif platform == "win32":
@@ -95,7 +102,7 @@ class App:
         questions_are_resolved = False
 
         # Click Handler
-        def send_result(event=None):
+        def send_result(_=None):
             if self.question_number > len(self.all_b):
                 return
             result = self.e.get()
@@ -106,7 +113,7 @@ class App:
                 result = int(result)
             except ValueError:
                 logger.log("Неправильный формат ввода: не число!")
-                playsound("../resources/roblox_negative.mp3", block=False)
+                playsound(os.path.join(R, "roblox_negative.mp3"), block=False)
                 return
 
             if result == self.a * self.b:
@@ -122,7 +129,7 @@ class App:
                 self.question.set(f"Сколько будет {self.a} x {self.b} = ?")
             else:
                 logger.log(f"{self.a} x {self.b} не будет равно {result}! ОШИБКА\n")
-                playsound("../resources/roblox_negative.mp3", block=False)
+                playsound(os.path.join(R, "roblox_negative.mp3"), block=False)
 
         def update_clock():
             now = datetime.now()
@@ -130,9 +137,9 @@ class App:
             formatted_delta = delta + datetime(year=2000, month=1, day=1)
 
             if formatted_delta.second == 0 and formatted_delta.minute in (5, 4, 3, 2, 1):
-                playsound("../resources/notification.mp3", block=False)
+                playsound(os.path.join(R, "notification.mp3"), block=False)
             if formatted_delta.minute == 0 and formatted_delta.second in (45, 30, 15):
-                playsound("../resources/notification.mp3", block=False)
+                playsound(os.path.join(R, "notification.mp3"), block=False)
             if now > max_time:
                 logger.log("ВРЕМЯ КОНЧИЛОСЬ!")
                 self.root.after(3000, lambda: self.root.destroy())
@@ -143,16 +150,21 @@ class App:
 
         # Time init
         started_time = datetime.now()
-        max_time = started_time + timedelta(minutes=0, seconds=10)
-        clock_phase = 1
+        max_time = started_time + timedelta(minutes=10, seconds=00)
         update_clock()
+
+        def close_window():
+            log_out_procedure()
+            self.root.destroy()
+
 
         # Handling
         self.e.bind("<Return>", send_result)
         self.send_result_button.configure(command=lambda: send_result())
+        self.root.protocol("WM_DELETE_WINDOW", close_window)
 
         # Get attention of user
-        playsound("../resources/ding.mp3", block=False)
+        playsound(os.path.join(R, "ding.mp3"), block=False)
 
         # Run app
         self.root.mainloop()
